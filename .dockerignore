@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Build outputs
+client-build/
+coverage/
+bin/build.txt
+
+# Development files
+.git/
+.github/
+.gitignore
+*.md
+!server/README.md
+!client/README.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Test files
+**/__tests__/
+*.test.js
+*.spec.js
+jest.config.js
+
+# Runtime files
+*.log
+*.pid
+browserquest.log
+browserquest.pid
+
+# Pre-commit and linting
+.pre-commit-config.yaml
+.eslintrc.json
+.prettierrc.json
+.prettierignore
+.markdownlint.json
+.secrets.baseline
+setup-pre-commit.sh
+
+# Documentation
+MODERNIZATION.md
+MANAGEMENT_SCRIPT_README.md
+PRE_COMMIT_SETUP.md
+PRE_COMMIT_SUMMARY.txt
+
+# Scripts not needed in production
+browserquest.sh
+
+# Client music (large files)
+client/audio/music/
+
+# Development config templates
+*-dist
+config_local*
+config_build.json

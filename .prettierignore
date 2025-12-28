@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+client-build/
+coverage/
+bin/build.txt
+
+# Third-party libraries
+client/js/lib/
+server/js/lib/
+
+# Data files
+client/sprites/*.json
+server/maps/*.json
+
+# Logs
+*.log
+
+# Binary files
+client/img/
+client/audio/
+client/fonts/
+
+# Generated files
+browserquest.pid
+.secrets.baseline

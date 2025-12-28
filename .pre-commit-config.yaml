@@ -1,0 +1,138 @@
+# Pre-commit hooks for BrowserQuest
+# See https://pre-commit.com for more information
+
+repos:
+    # General file checks
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          # Prevent large files from being committed
+          - id: check-added-large-files
+            args: ['--maxkb=1000']
+
+          # Check for files that would conflict in case-insensitive filesystems
+          - id: check-case-conflict
+
+          # Check for merge conflicts
+          - id: check-merge-conflict
+
+          # Check JSON files for syntax errors
+          - id: check-json
+            exclude: ^(client/sprites/.*\.json|server/maps/.*\.json)$
+
+          # Check YAML files for syntax errors
+          - id: check-yaml
+
+          # Ensure files end with a newline
+          - id: end-of-file-fixer
+            exclude: ^(client/img/|client/audio/|client/fonts/)
+
+          # Remove trailing whitespace
+          - id: trailing-whitespace
+            exclude: ^(client/img/|client/audio/|client/fonts/|.*\.md$)
+
+          # Prevent committing to main/master branch
+          - id: no-commit-to-branch
+            args: ['--branch', 'master', '--branch', 'main']
+
+          # Check for private keys
+          - id: detect-private-key
+
+          # Fix mixed line endings
+          - id: mixed-line-ending
+            args: ['--fix=lf']
+            exclude: ^(client/img/|client/audio/|client/fonts/)
+
+    # JavaScript/Node.js specific checks
+    - repo: https://github.com/pre-commit/mirrors-eslint
+      rev: v9.17.0
+      hooks:
+          - id: eslint
+            files: \.(js|jsx|ts|tsx)$
+            exclude: ^(client/js/lib/|server/js/lib/|bin/|node_modules/)
+            args: ['--fix']
+            additional_dependencies:
+                - eslint@^8.57.0
+                - eslint-config-prettier@^9.1.0
+
+    # Prettier for code formatting
+    - repo: https://github.com/pre-commit/mirrors-prettier
+      rev: v4.0.0-alpha.8
+      hooks:
+          - id: prettier
+            files: \.(js|jsx|ts|tsx|json|css|md|yml|yaml)$
+            exclude: ^(client/js/lib/|server/js/lib/|bin/|client/sprites/|server/maps/|package-lock\.json)$
+            args: ['--write', '--ignore-unknown']
+
+    # Security checks
+    - repo: https://github.com/Yelp/detect-secrets
+      rev: v1.5.0
+      hooks:
+          - id: detect-secrets
+            args: ['--baseline', '.secrets.baseline']
+            exclude: ^(package-lock\.json|.*\.log)$
+
+    # Shell script checks
+    - repo: https://github.com/shellcheck-py/shellcheck-py
+      rev: v0.10.0.1
+      hooks:
+          - id: shellcheck
+            files: \.(sh|bash)$
+            args: ['-x']
+
+    # Markdown checks
+    - repo: https://github.com/igorshubovych/markdownlint-cli
+      rev: v0.43.0
+      hooks:
+          - id: markdownlint
+            args: ['--fix']
+            exclude: ^(node_modules/|client-build/)
+
+    # Check package.json for issues
+    - repo: local
+      hooks:
+          - id: npm-audit
+            name: npm audit
+            entry: bash -c 'npm audit --audit-level=moderate || true'
+            language: system
+            files: package\.json
+            pass_filenames: false
+
+          - id: npm-test
+            name: run tests
+            entry: npm test
+            language: system
+            files: \.(js|json)$
+            exclude: ^(client/|bin/|node_modules/)
+            pass_filenames: false
+
+          - id: check-browserquest-not-running
+            name: ensure server is not running
+            entry: bash -c 'if [ -f browserquest.pid ]; then echo "Server is running. Stop it before committing."; exit 1; fi'
+            language: system
+            pass_filenames: false
+
+    # Git commit message checks
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v3.6.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]
+            args: [--force-scope]
+
+# Configuration for specific file types
+default_language_version:
+    node: system
+
+# Exclude patterns for all hooks
+exclude: |
+    (?x)(
+      ^client-build/|
+      ^node_modules/|
+      ^coverage/|
+      \.log$|
+      \.pid$|
+      ^\.secrets\.baseline$|
+      ^client/js/lib/|
+      ^server/js/lib/class\.js$
+    )

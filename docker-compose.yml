@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  browserquest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: browserquest:latest
+    container_name: browserquest-game
+    ports:
+      - '8000:8000'
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Mount config for customization (optional)
+      - ./server/config_local.json:/app/server/config_local.json:ro
+      # Mount logs directory
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - browserquest-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "require('http').get('http://localhost:8000/status', (r) => {if(r.statusCode !== 200) throw new Error('Health check failed')})",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Memcached for metrics
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: browserquest-memcached
+    restart: unless-stopped
+    networks:
+      - browserquest-network
+    command: memcached -m 64
+
+networks:
+  browserquest-network:
+    driver: bridge
+
+volumes:
+  logs:

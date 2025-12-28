@@ -6,3 +6,24 @@ config_local*
 client/audio/music
 .DS_Store
 *.swp
+
+# Server management files
+browserquest.pid
+browserquest.log
+
+# Test coverage
+coverage/
+
+# npm
+package-lock.json
+
+# Pre-commit
+.secrets.baseline
+
+# Docker
+logs/
+
+# CI/CD
+server.log
+server.pid
+changed_files.txt
